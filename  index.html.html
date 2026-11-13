@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jelajah Panca Indra 3D</title>
+<style>
+:root{--bg:#fff4dc;--cd:#fff;--tx:#2b2a33;--mu:#6b6a75;--ac:#ff7a3d;--g:#2a9d8f;--bd:#f0dfbd;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1b26;--cd:#2a2736;--tx:#f3f0ff;--mu:#b6b3c6;--bd:#3d3950}}
+:root[data-theme="dark"]{--bg:#1d1b26;--cd:#2a2736;--tx:#f3f0ff;--mu:#b6b3c6;--bd:#3d3950}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.scr{display:none;flex-direction:column;gap:12px;height:100%;padding:16px;max-width:640px;margin:0 auto;overflow-y:auto}
+.scr.on{display:flex}
+h1{margin:0;font-size:28px}h2{margin:0;font-size:20px}p{margin:0;line-height:1.5}
+.mu{color:var(--mu);font-size:14px}
+.btn{border:0;border-radius:14px;padding:13px 16px;font-size:16px;font-weight:600;background:var(--ac);color:#fff;cursor:pointer}
+.btn.s{background:var(--cd);color:var(--tx);border:1px solid var(--bd)}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:16px;padding:14px}
+.c{align-items:center;justify-content:center;text-align:center}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid .btn{padding:20px 10px;font-size:17px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--bd);background:var(--cd);color:var(--tx);border-radius:999px;padding:8px 12px;font-size:14px;cursor:pointer}
+.chip.on{background:var(--g);color:#fff;border-color:var(--g)}
+#stage{position:relative;flex:1;min-height:260px;border-radius:16px;overflow:hidden;background:linear-gradient(160deg,#cfe9ff,#fff1d6)}
+#vid,#cv{position:absolute;inset:0;width:100%;height:100%}
+#vid{object-fit:cover;display:none}#cv{touch-action:none}
+.row{display:flex;gap:8px}.row .btn{flex:1;padding:10px 6px;font-size:14px}
+.opt{display:block;width:100%;text-align:left;margin-top:8px}
+.ok{background:#2a9d8f!important;color:#fff!important}.no{background:#d64545!important;color:#fff!important}
+.big{font-size:64px}
+</style></head><body>
+
+<section class="scr c on" id="open">
+<div class="big">👁️👂👃👅✋</div>
+<h1>Jelajah Panca Indra 3D</h1>
+<p class="mu">Media AR Interaktif IPAS Kelas 4</p>
+<button class="btn" onclick="go('menu')">Mulai</button>
+</section>
+
+<section class="scr" id="menu">
+<h1>Jelajah Panca Indra 3D</h1>
+<p class="mu">Pilih menu untuk mulai belajar.</p>
+<div class="grid">
+<button class="btn" onclick="go('materi')">📖 Materi</button>
+<button class="btn" onclick="openAR(0)">📷 Scan AR</button>
+<button class="btn" onclick="startQuiz()">✏️ Latihan</button>
+<button class="btn" onclick="go('profil')">👤 Profil</button>
+</div>
+</section>
+
+<section class="scr" id="materi">
+<h2>Alat Panca Indra</h2>
+<div id="mlist" style="display:flex;flex-direction:column;gap:10px"></div>
+<button class="btn s" onclick="go('menu')">← Menu utama</button>
+</section>
+
+<section class="scr" id="ar">
+<h2 id="arT">Scan AR</h2>
+<div class="chips" id="arC"></div>
+<div id="stage"><video id="vid" playsinline muted></video><canvas id="cv"></canvas></div>
+<div class="chips" id="pC"></div>
+<div class="card" id="inf"></div>
+<div class="row">
+<button class="btn s" onclick="auto=!auto">🔄 Putar</button>
+<button class="btn s" onclick="zoom(-1)">➕ Zoom</button>
+<button class="btn s" onclick="zoom(1)">➖ Zoom</button>
+<button class="btn s" onclick="say(cur.n+'. '+cur.d)">🔊 Suara</button>
+<button class="btn s" onclick="cam()">📷 Kamera</button>
+</div>
+<button class="btn s" onclick="stopCam();go('menu')">← Menu utama</button>
+</section>
+
+<section class="scr" id="quiz">
+<p class="mu" id="qn"></p><h2 id="qq"></h2><div id="qo"></div>
+<p id="fb" style="font-weight:600"></p>
+<button class="btn" id="nx" style="display:none" onclick="nextQ()">Lanjut</button>
+</section>
+
+<section class="scr c" id="res">
+<div class="big" id="stars"></div><h2>Selamat, kamu hebat!</h2>
+<p id="sc"></p>
+<button class="btn" onclick="startQuiz()">Ulangi</button>
+<button class="btn s" onclick="go('menu')">Menu utama</button>
+</section>
+
+<section class="scr" id="profil">
+<h2>Profil Pengembang</h2>
+<div class="card"><p><b>Tiara Yursi Meritza</b></p><p class="mu">NPM A1G023143 · Kelas 7C</p><p class="mu">PGSD, FKIP, Universitas Bengkulu</p><p class="mu">Dosen pengampu: Dr. Dwi Anggraini, S.Sn., M.Pd. / Ike Kurniawati, M.Pd.</p></div>
+<button class="btn s" onclick="go('menu')">← Menu utama</button>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),P=Math.PI;
+function go(id){document.querySelectorAll('.scr').forEach(e=>e.classList.toggle('on',e.id===id));speechSynthesis&&speechSynthesis.cancel()}
+function say(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='id-ID';speechSynthesis.speak(u)}catch(e){}}
+function M(g,c,o){return new THREE.Mesh(g,new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.5},o||{})))}
+function at(m,x,y,z,rx,ry,rz,s){m.position.set(x,y,z);m.rotation.set(rx||0,ry||0,rz||0);if(s)m.scale.set(s[0],s[1],s[2]);return m}
+const S=(r)=>new THREE.SphereGeometry(r,32,24),C=(r,h)=>new THREE.CylinderGeometry(r,r,h,24);
+function mk(h){const L=[];return{L,add(n,d,...ms){ms.forEach(m=>h.add(m));L.push({n,d,ms})}}}
+
+const ORG=[
+{n:"Mata",e:"👁️",f:"Mata adalah indra penglihatan. Mata menangkap cahaya agar kita bisa melihat bentuk, warna, dan jarak benda.",s:1,ox:0,
+b(h){const k=mk(h);
+k.add("Sklera","Bagian putih yang kuat. Melindungi bola mata dan menjaga bentuknya.",M(S(1),0xf4f4f4));
+k.add("Kornea","Lapisan bening di depan mata. Cahaya pertama kali masuk lewat sini.",at(M(S(.62),0x9fd8ff,{transparent:true,opacity:.4}),0,0,.78,0,0,0,[1,1,.5]));
+k.add("Iris","Bagian berwarna pada mata. Mengatur besar kecilnya pupil.",at(M(C(.45,.04),0x7a4a21),0,0,.97,P/2));
+k.add("Pupil","Lubang hitam di tengah iris. Tempat cahaya masuk ke dalam mata.",at(M(C(.2,.04),0x000000),0,0,.99,P/2));
+k.add("Retina","Lapisan di belakang mata yang menerima cahaya dan mengubahnya menjadi sinyal.",at(M(new THREE.SphereGeometry(1.02,32,16,0,P*2,0,P*.42),0xd64545,{side:THREE.DoubleSide}),0,0,0,-P/2));
+k.add("Saraf optik","Mengirim sinyal gambar dari retina ke otak.",at(M(C(.14,.9),0xffd23f),0,0,-1.4,P/2));
+return k.L}},
+{n:"Telinga",e:"👂",f:"Telinga adalah indra pendengaran. Telinga menangkap getaran suara lalu mengirimnya ke otak.",s:.6,ox:-.7,
+b(h){const k=mk(h);
+k.add("Daun telinga","Menangkap suara dari luar dan mengarahkannya ke saluran telinga.",at(M(new THREE.TorusGeometry(.9,.2,16,40,P*1.5),0xf0b48c),-1.1,0,0,0,0,P/4));
+k.add("Saluran telinga","Lorong yang menyalurkan getaran suara menuju gendang telinga.",at(M(C(.2,1.5),0xd9a07a),0,0,0,0,0,P/2));
+k.add("Gendang telinga","Selaput tipis yang bergetar ketika terkena suara.",at(M(C(.4,.05),0xf7e1c9),.8,0,0,0,0,P/2));
+k.add("Tulang pendengaran","Tiga tulang kecil yang menggetarkan suara menuju rumah siput.",at(M(S(.13),0xb0b0b8),1.1,0,0),at(M(S(.13),0xb0b0b8),1.4,.05,0),at(M(S(.13),0xb0b0b8),1.7,0,0));
+k.add("Rumah siput (koklea)","Mengubah getaran suara menjadi sinyal saraf.",at(M(new THREE.TorusKnotGeometry(.35,.12,60,8,2,3),0xff9f1c),2.3,0,0));
+k.add("Saraf pendengaran","Mengirim sinyal suara ke otak.",at(M(C(.08,.9),0xffd23f),3,0,0,0,0,P/2));
+return k.L}},
+{n:"Hidung",e:"👃",f:"Hidung adalah indra penciuman. Hidung mengenali bau dan membantu kita bernapas.",s:1,ox:0,
+b(h){const k=mk(h);
+k.add("Batang hidung","Bagian luar hidung yang menyalurkan udara masuk.",at(M(S(1),0xf0b48c),0,0,0,0,0,0,[1,1.2,.9]));
+k.add("Lubang hidung","Pintu masuk udara dan bau-bauan.",at(M(S(.3),0x3a2a2a),-.35,-.75,.45,0,0,0,[1,.6,1]),at(M(S(.3),0x3a2a2a),.35,-.75,.45,0,0,0,[1,.6,1]));
+k.add("Sel pencium","Mengenali bau dan mengirim sinyalnya lewat saraf ke otak.",at(M(S(.35),0xffd23f),0,1.7,0),at(M(C(.06,.6),0xffd23f),0,1.3,0));
+return k.L}},
+{n:"Lidah",e:"👅",f:"Lidah adalah indra pengecap. Lidah merasakan manis, asin, asam, dan pahit.",s:1.1,ox:0,
+b(h){const k=mk(h),T=(c,x,z)=>at(M(S(.3),c),x,.27,z,0,0,0,[1,.25,1]);
+k.add("Lidah","Otot lembut yang dipenuhi bintik kecil (papila) untuk merasakan makanan.",at(M(S(1),0xe5737f),0,0,0,0,0,0,[1.1,.35,1.6]));
+k.add("Ujung lidah: manis","Bagian yang paling peka terhadap rasa manis.",T(0xff9ecb,0,1.15));
+k.add("Sisi depan: asin","Bagian yang peka terhadap rasa asin.",T(0x8ecae6,-.6,.55),T(0x8ecae6,.6,.55));
+k.add("Sisi belakang: asam","Bagian yang peka terhadap rasa asam.",T(0xffd23f,-.7,-.3),T(0xffd23f,.7,-.3));
+k.add("Pangkal lidah: pahit","Bagian yang paling peka terhadap rasa pahit.",T(0x6a994e,0,-1.1));
+return k.L}},
+{n:"Kulit",e:"✋",f:"Kulit adalah indra peraba. Kulit merasakan panas, dingin, sentuhan, dan sakit.",s:1,ox:0,
+b(h){const k=mk(h),B=(w,y,c)=>at(M(new THREE.BoxGeometry(2.4,w,1.6),c),0,y,0);
+k.add("Epidermis","Lapisan terluar kulit. Melindungi tubuh dari kuman dan debu.",B(.25,.9,0xf1c7a0));
+k.add("Dermis","Lapisan tengah yang berisi saraf peraba dan pembuluh darah.",B(.7,.42,0xe58f8f));
+k.add("Lapisan lemak","Lapisan terdalam. Menyimpan energi dan menjaga tubuh tetap hangat.",B(.9,-.4,0xf6d77a));
+k.add("Saraf peraba","Mengirim rasa sentuh, panas, dan dingin ke otak.",at(M(C(.06,1.1),0xd62828),.5,.5,.82),at(M(S(.14),0xd62828),.5,1.05,.82));
+k.add("Rambut","Tumbuh dari dermis. Membantu melindungi kulit.",at(M(C(.05,1.6),0x2b2020),-.6,1,0));
+return k.L}}
+];
+
+// ---------- Materi ----------
+$('#mlist').innerHTML=ORG.map((o,i)=>`<div class="card"><h2>${o.e} ${o.n}</h2><p>${o.f}</p><div class="row" style="margin-top:10px"><button class="btn" onclick="openAR(${i})">Lihat AR</button><button class="btn s" onclick="say(ORG[${i}].f)">🔊 Dengar</button></div></div>`).join('');
+
+// ---------- AR / 3D ----------
+let R,cam3,scene,piv,hold,cur,parts=[],oi=0,auto=true,ready=false,stream=null;
+function init(){
+ const cv=$('#cv'),st=$('#stage');
+ R=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true});R.setPixelRatio(devicePixelRatio);
+ scene=new THREE.Scene();cam3=new THREE.PerspectiveCamera(45,1,.1,100);cam3.position.z=6;
+ scene.add(new THREE.AmbientLight(0xffffff,.75));const dl=new THREE.DirectionalLight(0xffffff,.9);dl.position.set(3,4,5);scene.add(dl);
+ piv=new THREE.Group();scene.add(piv);
+ const rs=()=>{const w=st.clientWidth,h=st.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam3.aspect=w/h;cam3.updateProjectionMatrix()};
+ new ResizeObserver(rs).observe(st);
+ const pts=new Map();let pd=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,e);auto=false});
+ cv.addEventListener('pointerup',e=>pts.delete(e.pointerId));cv.addEventListener('pointercancel',e=>pts.delete(e.pointerId));
+ cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
+  if(pts.size===2){const a=[...pts.values()];const d0=Math.hypot(a[0].clientX-a[1].clientX,a[0].clientY-a[1].clientY);pts.set(e.pointerId,e);const b=[...pts.values()];const d1=Math.hypot(b[0].clientX-b[1].clientX,b[0].clientY-b[1].clientY);cam3.position.z=Math.min(10,Math.max(3,cam3.position.z-(d1-d0)*.02))}
+  else{piv.rotation.y+=(e.clientX-p.clientX)*.01;piv.rotation.x+=(e.clientY-p.clientY)*.01;pts.set(e.pointerId,e)}});
+ cv.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?1:-1)},{passive:false});
+ (function loop(){requestAnimationFrame(loop);if(auto)piv.rotation.y+=.008;R.render(scene,cam3)})();
+ ready=true;rs();
+}
+function zoom(d){cam3.position.z=Math.min(10,Math.max(3,cam3.position.z+d*.7))}
+function load(i){
+ oi=i;if(hold)piv.remove(hold);hold=new THREE.Group();piv.add(hold);
+ const o=ORG[i];parts=o.b(hold);hold.position.x=o.ox;piv.scale.setScalar(o.s);piv.rotation.set(.2,-.5,0);cam3.position.z=6;auto=true;
+ $('#arT').textContent='Scan AR: '+o.n;
+ $('#arC').innerHTML=ORG.map((x,j)=>`<button class="chip ${j===i?'on':''}" onclick="load(${j})">${x.e} ${x.n}</button>`).join('');
+ $('#pC').innerHTML=parts.map((p,j)=>`<button class="chip" onclick="pick(${j})">${p.n}</button>`).join('');
+ $('#inf').innerHTML=`<p>${o.f}</p><p class="mu" style="margin-top:6px">Ketuk nama bagian di atas untuk melihat fungsinya.</p>`;
+ cur={n:o.n,d:o.f};
+}
+function pick(j){
+ parts.forEach((p,k)=>p.ms.forEach(m=>m.material.emissive.setHex(k===j?0x996600:0)));
+ document.querySelectorAll('#pC .chip').forEach((c,k)=>c.classList.toggle('on',k===j));
+ cur=parts[j];$('#inf').innerHTML=`<p><b>${cur.n}</b></p><p>${cur.d}</p>`;say(cur.n+'. '+cur.d);
+}
+function openAR(i){go('ar');if(!ready)init();load(i)}
+async function cam(){
+ if(stream){stopCam();return}
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});const v=$('#vid');v.srcObject=stream;v.style.display='block';await v.play();$('#stage').style.background='none'}
+ catch(e){alert('Kamera tidak bisa dibuka. Izinkan akses kamera atau buka halaman ini lewat tautan langsung.')}
+}
+function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}const v=$('#vid');v.style.display='none';v.srcObject=null;$('#stage').style.background=''}
+
+// ---------- Latihan ----------
+const Q=[
+["Alat indra yang berfungsi untuk melihat adalah …",["Telinga","Mata","Hidung","Kulit"],1],
+["Bagian bening di depan mata yang pertama dilewati cahaya adalah …",["Retina","Kornea","Saraf optik","Rambut"],1],
+["Gendang telinga bergetar ketika terkena …",["Cahaya","Bau","Suara","Rasa"],2],
+["Alat indra untuk mencium bau adalah …",["Lidah","Hidung","Kulit","Telinga"],1],
+["Rasa pahit paling terasa di bagian …",["Ujung lidah","Sisi depan lidah","Pangkal lidah","Bibir"],2],
+["Saraf peraba terdapat pada lapisan kulit yang disebut …",["Epidermis","Dermis","Rambut","Kuku"],1],
+["Cara merawat mata yang benar adalah …",["Mengucek dengan tangan kotor","Membaca di tempat yang cukup cahaya","Menatap layar terus-menerus","Membaca sambil berbaring"],1]
+];
+let qi=0,sc=0,done=false;
+function startQuiz(){qi=0;sc=0;go('quiz');showQ()}
+function showQ(){done=false;const q=Q[qi];$('#qn').textContent=`Soal ${qi+1} dari ${Q.length}`;$('#qq').textContent=q[0];
+ $('#qo').innerHTML=q[1].map((t,i)=>`<button class="btn s opt" onclick="ans(${i},this)">${'ABCD'[i]}. ${t}</button>`).join('');
+ $('#fb').textContent='';$('#nx').style.display='none'}
+function ans(i,b){if(done)return;done=true;const c=Q[qi][2],bs=document.querySelectorAll('#qo .opt');
+ bs[c].classList.add('ok');if(i===c){sc++;$('#fb').textContent='Benar! 🎉'}else{b.classList.add('no');$('#fb').textContent='Belum tepat, coba lagi nanti ya.'}
+ $('#nx').style.display='block';$('#nx').textContent=qi===Q.length-1?'Lihat skor':'Lanjut'}
+function nextQ(){if(qi<Q.length-1){qi++;showQ()}else{const n=Math.round(sc/Q.length*100);
+ $('#sc').textContent=`Skor akhir: ${n} (${sc} dari ${Q.length} benar)`;$('#stars').textContent='⭐'.repeat(Math.max(1,Math.round(sc/Q.length*3)));go('res')}}
+</script></body></html>
